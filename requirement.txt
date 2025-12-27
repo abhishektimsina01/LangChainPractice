@@ -1,0 +1,12 @@
+langchain
+langchain-core
+langchain-community
+langchain-groq
+langchain-ollama
+langchain-nomic
+groq
+langchain-huggingface
+transformers
+python-dotenv
+numpy
+scikit-learn
