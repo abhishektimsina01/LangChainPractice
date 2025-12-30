@@ -16,13 +16,13 @@ else:
     os.mkdir("src")
 
 # check if the file exist or not
-print(os.path.exists(".env"))
-print(os.path.exists(".env1"))
+print(os.path.exists("venv"))
+# print(os.path.exists(".env1"))
 
-print(os.path.isfile("RAG.py"))
-print(os.path.isdir("venv"))
+# print(os.path.isfile("RAG.py"))
+# print(os.path.isdir("venv"))
 
-path = os.getcwd()
-print(os.path.basename(path))
-print(os.path.dirname(path))
-print(os.path.splitext(path))
+# path = os.getcwd()
+# print(os.path.basename(path))
+# print(os.path.dirname(path))
+# print(os.path.splitext(path))

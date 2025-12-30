@@ -10,3 +10,9 @@ transformers
 python-dotenv
 numpy
 scikit-learn
+chromadb
+pypdf
+langchain-chroma
+youtube-transcript-api
+faiss-cpu
+tiktoken
