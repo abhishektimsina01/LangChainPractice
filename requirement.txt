@@ -16,3 +16,5 @@ langchain-chroma
 youtube-transcript-api
 faiss-cpu
 tiktoken
+duckduckgo-search
+ddgs
