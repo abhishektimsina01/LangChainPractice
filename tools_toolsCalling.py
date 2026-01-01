@@ -6,6 +6,7 @@
 # tools = built-in tools and custom tools
 from langchain_community.tools import DuckDuckGoSearchRun
 # for custom tools
+from langchain_core.tools import InjectedToolArg
 from langchain_core.tools import tool
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import StructuredTool
@@ -86,8 +87,8 @@ def Conversion(baseCurrency: str, targetCurrency : str) -> float:
     return response.json()['conversion_rates'][targetCurrency]
 
 @tool
-def CurrencyExchange(baseCurrency : float, conversionRate : float) -> float:
-    '''given the currency conversionRate multiply two input values given as baseCurrency and conversionRate to calculate the target currency value'''
+def CurrencyExchange(baseCurrency : float, conversionRate : Annotated[float, InjectedToolArg]) -> float:
+    '''coverts the given baseCurrency by multiplying two input values baseCurrency and conversionRate to calculate the target currency value'''
     return baseCurrency*conversionRate
 
 
@@ -100,5 +101,18 @@ llm_with_tools1 = llm.bind_tools([Conversion, CurrencyExchange])
 message = [HumanMessage("What is the fullform OF LLM?")]
 print(llm_with_tools1.invoke(message))
 
-message = [HumanMessage("What is the currency conversion factor of USD to NPR and on the basis of that, can you find what is 10 USD to NPR?")]
-print(llm_with_tools1.invoke(message))
+message = [HumanMessage("What is the currency conversion factor of USD to NPR and convert 10 USD into NPR")]
+aiMessage = llm_with_tools1.invoke(message)
+message.append(aiMessage)
+
+for tool_call in aiMessage.tool_calls:
+    print(tool_call)
+    if tool_call['name'] == "Conversion":
+        toolMessage = Conversion.invoke(tool_call)
+        message.append(toolMessage)
+    if tool_call['name'] == "CurrencyExchange":
+        tool_call['args']['conversionRate'] = float(toolMessage.content)
+        toolMessage = CurrencyExchange.invoke(tool_call)
+        message.append(toolMessage)
+
+print(llm_with_tools1.invoke(message).content)
