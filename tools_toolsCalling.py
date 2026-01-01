@@ -13,6 +13,8 @@ from pydantic import BaseModel, Field
 from langchain_groq import ChatGroq
 import os
 from dotenv import load_dotenv
+import requests
+from typing import Annotated
 load_dotenv()
 
 # built-in tools
@@ -69,5 +71,34 @@ messages.append(result)
 tool_result = multiplyTool.invoke(result.tool_calls[0])
 messages.append(tool_result)
 print(messages)
+print(llm_with_tools.invoke(messages).content)  
 
-print(llm_with_tools.invoke(messages).content)
+
+print("------------------------------------------------------")
+print("Conversion tool")
+
+# tools for LLM
+@tool
+def Conversion(baseCurrency: str, targetCurrency : str) -> float:
+    '''Given the baseCurrency and targetCurrency, we call the api for the currency conversion factor right now between them'''
+    url = f"https://v6.exchangerate-api.com/v6/{os.getenv("currency_api_key")}/latest/{baseCurrency}"
+    response = requests.get(url)
+    return response.json()['conversion_rates'][targetCurrency]
+
+@tool
+def CurrencyExchange(baseCurrency : float, conversionRate : float) -> float:
+    '''given the currency conversionRate multiply two input values given as baseCurrency and conversionRate to calculate the target currency value'''
+    return baseCurrency*conversionRate
+
+
+conversionRate = Conversion.invoke({'baseCurrency': "USD", 'targetCurrency' : "NPR"})
+print(conversionRate)
+print(CurrencyExchange.invoke({'baseCurrency': 10, 'conversionRate' : conversionRate}))
+
+llm_with_tools1 = llm.bind_tools([Conversion, CurrencyExchange])
+
+message = [HumanMessage("What is the fullform OF LLM?")]
+print(llm_with_tools1.invoke(message))
+
+message = [HumanMessage("What is the currency conversion factor of USD to NPR and on the basis of that, can you find what is 10 USD to NPR?")]
+print(llm_with_tools1.invoke(message))
