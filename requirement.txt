@@ -18,3 +18,4 @@ faiss-cpu
 tiktoken
 duckduckgo-search
 ddgs
+langgraph
