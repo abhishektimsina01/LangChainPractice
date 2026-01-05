@@ -1,4 +1,4 @@
-from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.output_parsers import PydanticOutputParser, StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from pydantic import BaseModel, Field
 from langchain_groq import ChatGroq
@@ -12,7 +12,7 @@ try:
         age : int = Field(gt=18, lt=20, description="this contains the age of the person")
 
     parser = PydanticOutputParser(pydantic_object=Person)
-
+    parser1 = StrOutputParser()
     template = PromptTemplate(
         template="Give me the name and age for an random person who is {personal_data} {format_instructions}",
         input_variables=["peronal_data"],
@@ -24,7 +24,7 @@ try:
         api_key=os.getenv("api_key")
     )
     prompt = template.invoke({'personal_data' : 'indian'})
-    print(prompt)
+    # print(prompt)
     response = template | llm | parser
     print(response.invoke({'personal_data' : 'indian'}))
 except Exception as e:
