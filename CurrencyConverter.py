@@ -7,7 +7,7 @@
 from langchain_core.tools import InjectedToolArg
 from langchain_core.tools import tool
 from langchain_core.messages import HumanMessage
-from langchain_groq import ChatGroq
+from langchain_groq import ChatGroq 
 import os
 from dotenv import load_dotenv
 import requests
