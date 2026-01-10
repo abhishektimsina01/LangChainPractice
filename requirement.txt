@@ -19,3 +19,5 @@ tiktoken
 duckduckgo-search
 ddgs
 langgraph
+requests
+langgraph-checkpoint-sqlite
