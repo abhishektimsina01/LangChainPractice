@@ -62,7 +62,7 @@ vectoStore = Chroma.from_documents(
 retriever = vectoStore.as_retriever(search_kwargs = {'k' : 3})
 template = PromptTemplate(
     template="""The prompt is {query} and \n 
-    {context}""",
+    {context}, if u dont know the asnwer from the context provided just write i dont know instead of hallucinating""",
     input_variables=['query', 'context']
 )
 
