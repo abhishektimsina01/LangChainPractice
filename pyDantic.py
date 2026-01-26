@@ -26,6 +26,6 @@ try:
     prompt = template.invoke({'personal_data' : 'indian'})
     # print(prompt)
     response = template | llm | parser
-    print(response.invoke({'personal_data' : 'indian'}))
+    print(response.invoke({'personal_data' : 'indian'}).name)
 except Exception as e:
     print(e)
