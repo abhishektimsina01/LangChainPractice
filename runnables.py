@@ -33,3 +33,8 @@ print(after_chain.invoke({'topic' : "Abhi"}))
 
 # runnable = RunnableSequence(template, llm, parser)
 # print(runnable.invoke({'topic' : 'Natural Language'}))
+
+
+passThrough = RunnablePassthrough()
+
+print(passThrough.invoke(10))

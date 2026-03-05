@@ -10,7 +10,9 @@ from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
 from typing import TypedDict, Literal, Optional
 import os
-load_dotenv()
+load_dotenv()   
+
+
 
 class feedback(BaseModel):
     sentiment : Literal["positive", "negative"] = Field(description= "This contains theh positive or negative value baed upon the sentiment of the feeback from the user")
@@ -80,11 +82,11 @@ try:
         (lambda x:x.sentiment == 'positive', prompt_positive | llm1 | parser),
         (lambda x:x.sentiment == 'negative', prompt_negative | llm1 | parser),
         RunnableLambda(lambda x: "couldn't find sentix.sentiment")
-    )       
+    )
     chain = classification | branch_chain
     print(chain.invoke({'feedback' : "love it"}))
     chain.get_graph().print_ascii()
 except Exception as e: 
-    print(e)
+    print(e)    
 
 

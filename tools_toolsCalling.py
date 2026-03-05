@@ -23,62 +23,62 @@ search_tool = DuckDuckGoSearchRun()
 results = search_tool.invoke("Abhishek Timsina")
 # print(results)
 
-# print("Custom tools")
-@tool
-def multiplyTool(a : int, b : int) -> int:
-    # docs string => llm can understand waht the function can really do
-    """given 2 nunbers a and b, it returns the multiply of those those two number"""
-    return a*b
+# # print("Custom tools")
+# @tool
+# def multiplyTool(a : int, b : int) -> int:
+#     # docs string => llm can understand waht the function can really do
+#     """given 2 nunbers a and b, it returns the multiply of those those two number"""
+#     return a*b
 
-result = multiplyTool.invoke({'a': 5, 'b':5})
+# result = multiplyTool.invoke({'a': 5, 'b':5})
 # print(result)
 
 # print(multiplyTool.name)
 # print(multiplyTool.description)
 # print(multiplyTool.args)
 
-class MultiplyInput(BaseModel):
-    a : int = Field(description="first number to add", required = True)
-    b : int = Field(description="second number to add", required = True)
+# # class MultiplyInput(BaseModel):
+# #     a : int = Field(description="first number to add", required = True)
+# #     b : int = Field(description="second number to add", required = True)
 
-def multiply(a : int, b : int) -> int:
-    return a*b
+# # def multiply(a : int, b : int) -> int:
+# #     return a*b
 
-# creating tool using structuredTool
-multiply_tool = StructuredTool.from_function(
-    func=multiply,
-    name = "muiltiply",
-    description="multiply two number",
-    args_schema=MultiplyInput
-)
-# print(multiply_tool.invoke({'a' : 1, 'b' : 1}))
+# # # creating tool using structuredTool
+# # multiply_tool = StructuredTool.from_function(
+# #     func=multiply,
+# #     name = "muiltiply",
+# #     description="multiply two number",
+# #     args_schema=MultiplyInput
+# # )
+# # # print(multiply_tool.invoke({'a' : 1, 'b' : 1}))
 
 
-# tool binding = connecting llm and tool
+# # tool binding = connecting llm and tool
 llm = ChatGroq(
     model ="llama-3.3-70b-versatile",
     api_key=os.getenv("api_key")
 )
 
-llm_with_tools = llm.bind_tools([multiplyTool])
-# print(llm_with_tools.invoke("Hi, how are you?"))
-print("---------------------------------------------")
+# llm_with_tools = llm.bind_tools([multiplyTool])
+# # print(llm_with_tools.invoke("Hi, how are you?"))
+# print("---------------------------------------------")
 
-# it just suggest us the tool we can use and also the arguements we have to pass while using tools
-query = HumanMessage("can you multiply 3 with 10")
-messages = [query]
-result = llm_with_tools.invoke(messages)
-print(result)
-messages.append(result)
-tool_result = multiplyTool.invoke(result.tool_calls[0])
-print(tool_result)
-messages.append(tool_result)
-print(messages)
-print(llm_with_tools.invoke(messages).content)  
+# # # it just suggest us the tool we can use and also the arguements we have to pass while using tools
+# query = HumanMessage("can you multiply 3 with 10 and the result with 20")
+# messages = [query]
+# result = llm_with_tools.invoke(messages)
+# print(result)
+# messages.append(result)
+# tool_result = multiplyTool.invoke(result.tool_calls[0])
+# print(tool_result)
+# messages.append(tool_result)
+# print(messages)
+# print(llm_with_tools.invoke(messages).content)
 
 
-print("------------------------------------------------------")
-print("Conversion tool")
+# print("------------------------------------------------------")
+# print("Conversion tool")
 
 # tools for LLM
 @tool
@@ -100,22 +100,42 @@ print(CurrencyExchange.invoke({'baseCurrency': 10, 'conversionRate' : conversion
 
 llm_with_tools1 = llm.bind_tools([Conversion, CurrencyExchange])
 
-message = [HumanMessage("What is the fullform OF LLM?")]
-print(llm_with_tools1.invoke(message))
+# message = [HumanMessage("What is the fullform OF LLM?")]
+# print(llm_with_tools1.invoke(message))
+
+print('-'*100)
 
 message = [HumanMessage("What is the currency conversion factor of USD to NPR and convert 10 USD into NPR")]
 aiMessage = llm_with_tools1.invoke(message)
+print("Ai Message", aiMessage)
 message.append(aiMessage)
+
+print('-'*100)
 
 for tool_call in aiMessage.tool_calls:
     print(tool_call)
     if tool_call['name'] == "Conversion":
         toolMessage = Conversion.invoke(tool_call)
+        # print("the rate is: ", toolMessage)
         message.append(toolMessage)
     if tool_call['name'] == "CurrencyExchange":
         tool_call['args']['conversionRate'] = float(toolMessage.content)
         toolMessage = CurrencyExchange.invoke(tool_call)
+        # print("the value is: ", toolMessage)
         message.append(toolMessage)
 
+# print(message)
+print('-'*100)
+for i in message:
+    print(type(i))
+    if i.content == "":
+        print(tool_call)
+    else:
+        print(i.content)
+print('-'*100)
+
 print(message)
-print(llm_with_tools1.invoke(message).content)
+message.append(llm_with_tools1.invoke(message))
+
+for i in message:
+    print(i.pretty_print())

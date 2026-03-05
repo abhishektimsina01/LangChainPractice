@@ -43,6 +43,7 @@ print("Dimension using ollama : ", len(vector1))
 print("Dimension using nomic : ", len(vector2))
 doc1 = ["I am a huge fan of Criastiano Ronaldo", "I love watching football", "I want to be an expert AI-Engineer"]
 embedded_docs1 = embedding1.embed_documents(doc1)
+print(len(embedded_docs1))
 embedded_docs2 = embedding2.embed_documents(doc1)
 for i in embedded_docs1:
     print(i[:10])
